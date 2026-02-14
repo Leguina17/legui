@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Para ti 💌</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background-color: #fbc2eb;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  /* --- PREGUNTA INICIAL --- */
+  #intro {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    z-index: 1000;
+  }
+  .btn-container { margin-top: 20px; display: flex; gap: 15px; justify-content: center; }
+  button { padding: 12px 25px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+  .yes { background: #25D366; color: white; }
+  .no { background: #ff5c5c; color: white; position: relative; }
+
+  /* --- CONTENEDOR --- */
+  .wrapper {
+    display: none;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  /* --- EL SOBRE --- */
+  .envelope {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    background: #cfd8dc;
+    border-radius: 0 0 8px 8px;
+    z-index: 10;
+  }
+  
+  .envelope-body {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; 
+    z-index: 15;
+    border-radius: 0 0 8px 8px;
+  }
+
+  .flap {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #b0bec5;
+    clip-path: polygon(0 0, 100% 0, 50% 60%);
+    z-index: 40;
+    transform-origin: top;
+    transition: transform 0.6s ease;
+  }
+  .open .flap { transform: rotateX(180deg); z-index: 5; }
+
+  .front {
+    position: absolute;
+    bottom: 0; width: 100%; height: 100%;
+    background: #eceff1;
+    clip-path: polygon(0 35%, 50% 65%, 100% 35%, 100% 100%, 0 100%);
+    z-index: 30;
+    pointer-events: none;
+  }
+
+  /* --- LA CARTA --- */
+  .letter {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%;
+    height: 170px;
+    background: #ffffff !important;
+    background-image: linear-gradient(#e1e1e1 1px, transparent 1px) !important;
+    background-size: 100% 25px;
+    border-radius: 5px;
+    z-index: 20; 
+    opacity: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .open .letter { 
+    opacity: 1; 
+    animation: bounceInside 1.2s infinite ease-in-out; 
+    cursor: grab;
+  }
+
+  @keyframes bounceInside {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-25px); }
+  }
+
+  .letter-content {
+    font-size: 17px;
+    line-height: 26px;
+    color: #333;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  /* --- CARTA CUANDO SE CENTRA (CON SCROLL) --- */
+  .letter.fixed {
+    animation: none !important;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90vw !important;
+    max-width: 380px !important;
+    height: 75vh !important;
+    z-index: 999999 !important;
+    background-color: white !important;
+    opacity: 1 !important;
+    padding: 30px 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4) !important;
+    overflow-y: auto !important; 
+    touch-action: pan-y;
+  }
+
+  .letter.fixed .letter-content {
+    opacity: 1;
+    padding-bottom: 30px;
+  }
+
+  .letter.fixed::-webkit-scrollbar { width: 5px; }
+  .letter.fixed::-webkit-scrollbar-thumb { background: #fbc2eb; border-radius: 10px; }
+
+  #hint { position: fixed; bottom: 30px; color: white; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 20px; z-index: 100; display: none; }
+</style>
+</head>
+<body>
+
+<div id="intro">
+  <p style="font-size: 1.1em;">Tengo algo para ti...<br><b>¿Me quieres un poquito?</b></p>
+  <div class="btn-container">
+    <button class="yes" onclick="empezar()">¡Sí! ❤️</button>
+    <button class="no" id="noBtn" onmouseover="huir()">No 💔</button>
+  </div>
+</div>
+
+<div class="wrapper" id="wrapper">
+  <div class="envelope" id="envelope">
+    <div class="flap"></div>
+    <div class="envelope-body">
+      <div class="letter" id="letter">
+        <div class="letter-content">
+          <b style="color: #e91e63; font-size: 1.3em;">Para quien me ha conseguido tocar el corazón.. ❤️</b><br><br>
+          No puedo pasar San Valentín contigo, cosa que no me ha gustado porque es el día de los enamorados y así es como me siento por ti. No sé si te parece esto algo bonito o si es "lache", pero bueno, quería abrirme contigo por este día y es por eso que hice esta "carta".<br><br>
+          Quiero que sepas que, desde que estoy así contigo, veo la vida con mucho más color y alegría. No te miento si voy contando los días que quedan para poder volver a verte, para que estés aquí en Málaga e incluso para poder organizar un viaje juntos.<br><br>
+          Eres una persona de diez, la cual se merece todo lo bueno que pueda pasarle en este mundo. Ya te lo he dicho muchas veces, pero volveré a hacerlo: eres preciosa, pero eso para mí es algo secundario. Si realmente estoy enamorado de ti, es por lo increíblemente cojonuda que eres, jajaja.<br><br>
+          De verdad, puedo decir que no me molesta en absoluto cuando dices que eres una "pesada" por comentarme tus malestares de futuro, como lo de no saber qué hacer cuando termines. Todo eso es algo que oiría mil veces y siempre estaré atendiendo como si fuera la primera ya que, por ejemplo, si yo tengo un problema, tengo un solo problema; pero si tú tienes un problema, tú tienes un problema y yo tengo dos.<br><br>
+          Salga como salga esto que estamos construyendo, vas a tener un amigo y compañero de viaje para toda la vida. Ojalá pueda ver cómo triunfas y consigues todo lo que te propones.<br><br>
+          Te veo en 20 días.<br><br>
+          Te quiero ❤️
+        </div>
+      </div>
+    </div>
+    <div class="front"></div>
+  </div>
+  <p id="hint">Toca el sobre</p>
+</div>
+
+<script>
+  const letter = document.getElementById('letter');
+  const envelope = document.getElementById('envelope');
+  const hint = document.getElementById('hint');
+
+  function huir() {
+    const btn = document.getElementById('noBtn');
+    btn.style.position = 'fixed';
+    btn.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+    btn.style.top = Math.random() * (window.innerHeight - 50) + 'px';
+  }
+
+  function empezar() {
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('wrapper').style.display = 'flex';
+    hint.style.display = 'block';
+  }
+
+  envelope.addEventListener('click', () => {
+    if (!envelope.classList.contains('open')) {
+      envelope.classList.add('open');
+      hint.innerText = "¡Desliza la carta hacia arriba!";
+    }
+  });
+
+  let startY = 0;
+  let isDragging = false;
+
+  letter.addEventListener('touchstart', (e) => {
+    if (letter.classList.contains('fixed')) return;
+    if (!envelope.classList.contains('open')) return;
+    isDragging = true;
+    startY = e.touches[0].clientY;
+    letter.style.animation = "none"; 
+  }, {passive: true});
+
+  document.addEventListener('touchmove', (e) => {
+    if (!isDragging || letter.classList.contains('fixed')) return;
+    const currentY = e.touches[0].clientY;
+    const diff = startY - currentY;
+
+    if (diff > 0) {
+      letter.style.transform = `translateX(-50%) translateY(-${diff}px)`;
+      if (diff > 120) {
+        isDragging = false;
+        finalizarCarta();
+      }
+    }
+  }, {passive: true});
+
+  function finalizarCarta() {
+    document.body.appendChild(letter);
+    setTimeout(() => {
+      letter.classList.add('fixed');
+      envelope.style.opacity = "0.2";
+      hint.style.display = "none";
+    }, 10);
+  }
+
+  document.addEventListener('touchend', () => {
+    if (isDragging && !letter.classList.contains('fixed')) {
+      letter.style.transform = `translateX(-50%) translateY(0)`;
+      letter.style.animation = "bounceInside 1.2s infinite ease-in-out";
+    }
+    isDragging = false;
+  });
+</script>
+</body>
+</html>
